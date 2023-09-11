@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  instagram-clone-backend:
+    container_name: instagram-clone-backend
+    image: instagram-clone-backend:1.0.0
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run start:debug
+    ports:
+      - 3000:3000
