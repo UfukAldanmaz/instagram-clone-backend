@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 // Modules
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 export const TypeOrmConfig = TypeOrmModule.forRootAsync({
   useFactory: () => ({
@@ -24,9 +25,9 @@ export const TypeOrmConfig = TypeOrmModule.forRootAsync({
 
 const modules = [
   TypeOrmConfig,
-
   // App Modules
   AuthModule,
+  UsersModule,
 ];
 
 @Module({
@@ -34,4 +35,4 @@ const modules = [
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
