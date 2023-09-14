@@ -11,6 +11,7 @@ import { jwtConstants } from './constants';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User,]),
@@ -22,7 +23,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
   providers: [AuthService, {
     provide: APP_GUARD,
     useClass: JwtAuthGuard,
-  }, LocalStrategy],
+  }, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })
