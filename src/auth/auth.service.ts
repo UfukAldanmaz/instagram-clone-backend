@@ -28,15 +28,27 @@ export class AuthService {
     await this.repository.save(newUser);
   }
 
+  async validateUser(username: string, pass: string): Promise<any> {
+    const user = await this.repository.findOne({
+      where: {
+        username: username
+      }
+    });
+    if (user && user.password === pass) {
+      const { password, ...result } = user;
+      return result;
+    }
+    return null;
+  }
+
   public async signIn(username: string, pass: string): Promise<any> {
     const user = await this.repository.findOne({
       where: {
         username: username
       }
     });
-    if (bcrypt.compare(pass, user?.password)) {
+    if (!(await bcrypt.compare(pass, user?.password))) {
       throw new UnauthorizedException();
-
     }
     const payload = { sub: user.id, username: user.username };
     return {

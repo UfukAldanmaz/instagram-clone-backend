@@ -7,7 +7,10 @@ import { User } from './entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
-import { AuthGuard } from './auth.guard';
+// import { AuthGuard } from './auth.guard';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './strategies/local.strategy';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User,]),
@@ -15,11 +18,11 @@ import { AuthGuard } from './auth.guard';
     global: true,
     secret: jwtConstants.secret,
     signOptions: { expiresIn: '60s' },
-  }), UsersModule,],
+  }), UsersModule, PassportModule],
   providers: [AuthService, {
     provide: APP_GUARD,
-    useClass: AuthGuard,
-  },],
+    useClass: JwtAuthGuard,
+  }, LocalStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })
