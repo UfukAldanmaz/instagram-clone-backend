@@ -20,10 +20,12 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     secret: jwtConstants.secret,
     signOptions: { expiresIn: '60s' },
   }), UsersModule, PassportModule],
-  providers: [AuthService, {
-    provide: APP_GUARD,
-    useClass: JwtAuthGuard,
-  }, LocalStrategy, JwtStrategy],
+  providers: [AuthService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    LocalStrategy, JwtStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })

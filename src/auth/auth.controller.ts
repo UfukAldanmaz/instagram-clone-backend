@@ -21,18 +21,22 @@ export class AuthController {
   // signIn(@Body() signInDto: Record<string, any>) {
   //   return this.authService.signIn(signInDto.username, signInDto.password);
   // }
+  // @HttpCode(HttpStatus.OK)
+  // @Post('/login')
+  // @Public()
+  // signIn(@Body() signInDto: Record<string, any>) {
+  //   return this.authService.signIn(signInDto.user);
+  // }
 
   @UseGuards(LocalAuthGuard)
-  // @Public()
   @Post('/login')
+  // @Public()
   async login(@Request() req) {
-    console.log(req.user);
-
     return this.authService.signIn(req.user);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
+  @Get('/profile')
   getProfile(@Request() req) {
     return req.user;
   }
