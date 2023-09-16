@@ -13,7 +13,7 @@ export class AuthController {
   public async createUser(
     @Body() signUpDto: Record<string, any>
   ) {
-    await this.authService.createUser(signUpDto.username, signUpDto.password);
+    await this.authService.createUser(signUpDto.email, signUpDto.password);
   }
 
   // @HttpCode(HttpStatus.OK)

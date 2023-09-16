@@ -18,22 +18,22 @@ export class AuthService {
     private jwtService: JwtService
   ) { }
 
-  public async createUser(username: string, password: string) {
+  public async createUser(email: string, password: string) {
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser: User = this.repository.create({
-      username: username,
+      email: email,
       password: hashedPassword,
     });
 
     await this.repository.save(newUser);
   }
 
-  async validateUser(username: string, pass: string): Promise<any> {
+  async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.repository.findOne({
       where: {
-        username: username
+        email: email
       }
     });
 
@@ -45,7 +45,7 @@ export class AuthService {
   }
 
   public async signIn(user: any) {
-    const payload = { username: user.username, sub: user.id };
+    const payload = { email: user.email, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
     };
