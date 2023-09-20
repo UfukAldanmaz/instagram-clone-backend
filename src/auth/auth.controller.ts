@@ -28,11 +28,11 @@ export class AuthController {
   //   return this.authService.signIn(signInDto.user);
   // }
 
-  @UseGuards(LocalAuthGuard)
   @Post('/login')
-  // @Public()
-  async login(@Request() req) {
-    return this.authService.signIn(req.user);
+  @Public()
+  login(@Body() dto: Record<string, any>) {
+    const user = this.authService.validateUser(dto.email, dto.password);
+    return this.authService.signIn(user);
   }
 
   @UseGuards(JwtAuthGuard)
