@@ -16,7 +16,7 @@ export class User {
   @IsEmail()
   @IsNotEmpty()
   @IsString()
-  @Column({ name: 'email', nullable: false, unique: true })
+  @Column({ name: 'email', nullable: false })
   email: string;
 
   @IsNotEmpty()

@@ -19,7 +19,9 @@ export class AuthService {
   ) { }
 
   public async createUser(email: string, password: string) {
-
+    if (await this.repository.exist({ where: { email: email } })) {
+      throw new Error("Email already exists");
+    }
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser: User = this.repository.create({

@@ -19,7 +19,6 @@ export class UserMigration1694535829860 implements MigrationInterface {
             name: 'email',
             type: 'varchar',
             isNullable: false,
-            isUnique: true,
           },
           {
             name: 'password',
