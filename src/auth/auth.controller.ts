@@ -30,8 +30,8 @@ export class AuthController {
 
   @Post('/login')
   @Public()
-  login(@Body() dto: Record<string, any>) {
-    const user = this.authService.validateUser(dto.email, dto.password);
+  async login(@Body() dto: Record<string, any>) {
+    const user = await this.authService.validateUser(dto.email, dto.password);
     return this.authService.signIn(user);
   }
 
