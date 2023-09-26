@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  OneToMany,
   // Index,
 } from 'typeorm';
+import { Photo } from './photo.entity';
 
 @Entity()
 export class User {
@@ -26,4 +28,7 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToMany(() => Photo, (photo) => photo.user)
+  photos: Photo[]
 }
