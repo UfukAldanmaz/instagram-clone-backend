@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Request,
   UploadedFile,
@@ -23,5 +24,10 @@ export class PostController {
   ) {
     const userId = request.user.userId;
     this.postService.uploadPhoto(file, userId);
+  }
+
+  @Get()
+  list(@Request() request: any) {
+    return this.postService.list(request.user.userId);
   }
 }

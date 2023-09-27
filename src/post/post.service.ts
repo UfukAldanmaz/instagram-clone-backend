@@ -56,4 +56,20 @@ export class PostService {
       throw error;
     }
   }
+
+  async list(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: {
+        photos: true,
+      },
+    });
+    if (!user) {
+      throw 'User not found';
+    }
+
+    return user.photos;
+  }
 }
