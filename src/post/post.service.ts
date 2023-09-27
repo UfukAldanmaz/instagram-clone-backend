@@ -51,6 +51,7 @@ export class PostService {
       newPhoto.user = user;
 
       await this.photoRepository.save(newPhoto);
+      return newPhoto;
     } catch (error) {
       console.error(error.message);
       throw error;

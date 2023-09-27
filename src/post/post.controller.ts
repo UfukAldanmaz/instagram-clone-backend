@@ -23,7 +23,7 @@ export class PostController {
     @Request() request: any,
   ) {
     const userId = request.user.userId;
-    this.postService.uploadPhoto(file, userId);
+    return this.postService.uploadPhoto(file, userId);
   }
 
   @Get()
