@@ -9,6 +9,10 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { PostController } from './post/post.controller';
+import { PostService } from './post/post.service';
+import { PostModule } from './post/post.module';
+import { ConfigModule } from '@nestjs/config';
 
 export const TypeOrmConfig = TypeOrmModule.forRootAsync({
   useFactory: () => ({
@@ -30,15 +34,18 @@ const modules = [
   // App Modules
   AuthModule,
   UsersModule,
+  PostModule,
 ];
 
 @Module({
   imports: [...modules],
   controllers: [AppController],
-  providers: [AppService,
+  providers: [
+    AppService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    },],
+    },
+  ],
 })
-export class AppModule { }
+export class AppModule {}

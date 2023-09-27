@@ -28,7 +28,8 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+  updateOne: any;
 
   @OneToMany(() => Photo, (photo) => photo.user)
-  photos: Photo[]
+  photos: Photo[];
 }
