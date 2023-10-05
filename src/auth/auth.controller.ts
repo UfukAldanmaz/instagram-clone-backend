@@ -28,6 +28,18 @@ export class AuthController {
     return this.authService.signIn(user);
   }
 
+  @Post('/logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@Request() req) {
+    const userId = req.user.userId;
+    const logoutStatus = await this.authService.logout(userId);
+    if (logoutStatus.status) {
+      return { message: 'Logout successful' };
+    } else {
+      return { message: 'Logout failed' };
+    }
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
   getProfile(@Request() req) {

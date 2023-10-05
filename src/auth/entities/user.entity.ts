@@ -8,6 +8,7 @@ import {
   // Index,
 } from 'typeorm';
 import { Photo } from './photo.entity';
+import { RefreshToken } from './refresh-tokens.entity';
 
 @Entity()
 export class User {
@@ -32,4 +33,6 @@ export class User {
 
   @OneToMany(() => Photo, (photo) => photo.user)
   photos: Photo[];
+  @OneToMany(() => RefreshToken, (refresh_token) => refresh_token.user)
+  refresh_token: RefreshToken[];
 }

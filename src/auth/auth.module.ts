@@ -10,16 +10,21 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard';
+import { RefreshToken } from './entities/refresh-tokens.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User,]),
-  JwtModule.register({
-    global: true,
-    secret: jwtConstants.secret,
-    signOptions: { expiresIn: '60s' },
-  }), UsersModule, PassportModule],
+  imports: [
+    TypeOrmModule.forFeature([User, RefreshToken]),
+    JwtModule.register({
+      global: true,
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '60s' },
+    }),
+    UsersModule,
+    PassportModule,
+  ],
   providers: [AuthService, LocalStrategy, JwtStrategy, RefreshJwtAuthGuard],
   controllers: [AuthController],
   exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}
