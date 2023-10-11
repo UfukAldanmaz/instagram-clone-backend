@@ -5,10 +5,13 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
   // Index,
 } from 'typeorm';
 import { Photo } from './photo.entity';
 import { RefreshToken } from './refresh-tokens.entity';
+import { Following } from './following.entity';
 
 @Entity()
 export class User {
@@ -33,6 +36,15 @@ export class User {
 
   @OneToMany(() => Photo, (photo) => photo.user)
   photos: Photo[];
+
   @OneToMany(() => RefreshToken, (refresh_token) => refresh_token.user)
   refresh_token: RefreshToken[];
+
+  @ManyToMany(() => Following, (following) => following.follower)
+  @JoinTable({ name: 'user_following' })
+  following: Following[];
+
+  @ManyToMany(() => Following, (followers) => followers.following)
+  @JoinTable({ name: 'user_followers' })
+  followers: Following[];
 }

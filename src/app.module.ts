@@ -13,6 +13,7 @@ import { PostController } from './post/post.controller';
 import { PostService } from './post/post.service';
 import { PostModule } from './post/post.module';
 import { ConfigModule } from '@nestjs/config';
+import { FollowingModule } from './following/following.module';
 
 export const TypeOrmConfig = TypeOrmModule.forRootAsync({
   useFactory: () => ({
@@ -38,7 +39,7 @@ const modules = [
 ];
 
 @Module({
-  imports: [...modules],
+  imports: [...modules, FollowingModule],
   controllers: [AppController],
   providers: [
     AppService,
