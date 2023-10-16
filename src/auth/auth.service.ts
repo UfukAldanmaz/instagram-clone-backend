@@ -20,15 +20,19 @@ export class AuthService {
     private refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
-  public async createUser(email: string, password: string) {
+  public async createUser(email: string, password: string, username: string) {
     if (await this.repository.exist({ where: { email: email } })) {
       throw new Error('Email already exists');
+    }
+    if (await this.repository.exist({ where: { username: username } })) {
+      throw new Error('Username already exists');
     }
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser: User = this.repository.create({
       email: email,
       password: hashedPassword,
+      username: username,
     });
 
     await this.repository.save(newUser);

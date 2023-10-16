@@ -36,10 +36,11 @@ const modules = [
   AuthModule,
   UsersModule,
   PostModule,
+  FollowingModule,
 ];
 
 @Module({
-  imports: [...modules, FollowingModule],
+  imports: [...modules],
   controllers: [AppController],
   providers: [
     AppService,

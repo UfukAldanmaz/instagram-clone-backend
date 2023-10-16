@@ -5,8 +5,9 @@ import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { Photo } from 'src/auth/entities/photo.entity';
 import { User } from 'src/auth/entities/user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import * as FormData from 'form-data';
+import { Following } from 'src/auth/entities/following.entity';
 
 @Injectable()
 export class PostService {
@@ -16,6 +17,10 @@ export class PostService {
 
     @InjectRepository(Photo)
     private photoRepository: Repository<Photo>,
+
+    @InjectRepository(Following)
+    private followingRepository: Repository<Following>,
+
     private httpService: HttpService,
   ) {}
 
@@ -73,4 +78,34 @@ export class PostService {
 
     return user.photos;
   }
+
+  async getTimeline(userId: string): Promise<Photo[]> {
+    // Get user's own posts
+    const userPhotos = await this.photoRepository.find({
+      where: { user: { id: userId } },
+      relations: ['user'], // Include the user relation
+    });
+
+    // Get the IDs of users that the current user is following
+    const followingUsers = await this.followingRepository.find({
+      where: { follower: { id: userId } },
+      select: ['following'],
+    });
+
+    // Get posts from the users the current user is following
+    const followingPhotos = await this.photoRepository.find({
+      where: {
+        user: { id: In(followingUsers.map((user) => user.following.id)) },
+      },
+      relations: ['user'], // Include the user relation
+    });
+
+    // Combine the user's own posts and the posts from followings
+    const combinedPhotos = [...userPhotos, ...followingPhotos];
+
+    return combinedPhotos;
+  }
 }
+
+//paramtredeki userID'nin takip ettiği userId'leri al
+//photo tablosundan bu userId'lerin postlarını çek ve return et

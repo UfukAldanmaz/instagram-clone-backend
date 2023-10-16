@@ -34,6 +34,15 @@ export class User {
   createdAt: Date;
   updateOne: any;
 
+  @Column({ name: 'username', nullable: true })
+  username: string;
+
+  @Column({ name: 'bio', nullable: true })
+  bio: string;
+
+  @Column({ name: 'profilePictureUrl', nullable: true })
+  profilePictureUrl: string;
+
   @OneToMany(() => Photo, (photo) => photo.user)
   photos: Photo[];
 

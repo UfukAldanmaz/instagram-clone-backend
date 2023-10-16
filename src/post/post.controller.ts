@@ -30,4 +30,10 @@ export class PostController {
   list(@Request() request: any) {
     return this.postService.list(request.user.userId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/timeline')
+  timeline(@Request() request: any) {
+    return this.postService.getTimeline(request.user.userId);
+  }
 }

@@ -18,7 +18,11 @@ export class AuthController {
   @Post('/sign-up')
   @Public()
   public async createUser(@Body() signUpDto: Record<string, any>) {
-    await this.authService.createUser(signUpDto.email, signUpDto.password);
+    await this.authService.createUser(
+      signUpDto.email,
+      signUpDto.password,
+      signUpDto.username,
+    );
   }
 
   @Post('/login')
