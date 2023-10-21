@@ -46,9 +46,10 @@ export class AuthService {
     });
 
     if (!(await bcrypt.compare(pass, user?.password))) {
+      console.log('1');
+
       throw new UnauthorizedException();
     }
-    console.log('User authenticated:', user);
     return user;
   }
 
@@ -65,7 +66,12 @@ export class AuthService {
     return { status: true };
   }
 
-  public async refreshToken(user: any) {
+  public async refreshToken(userId: any) {
+    const user = await this.repository.findOne({
+      where: {
+        id: userId,
+      },
+    });
     const payload = { email: user.email, sub: user.id };
     const newAccessToken = this.jwtService.sign(payload);
     return {

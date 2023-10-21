@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
@@ -34,15 +34,16 @@ export class PostService {
       if (!user) {
         throw 'User not found';
       }
+
       const formData = new FormData();
       formData.append('image', photo.buffer.toString('base64'));
 
-      console.log('KEY', process.env.IMG_API_KEY);
+      // console.log('KEY', process.env.IMG_API_KEY);
 
       const { data: imageData } = await firstValueFrom(
         this.httpService
           .post(
-            `https://api.imgbb.com/1/upload?expiration=600&key=${'dfaa2b440b67524314651b73275a6e22'}`,
+            `https://api.imgbb.com/1/upload?key=${'dfaa2b440b67524314651b73275a6e22'}`,
             formData,
           )
           .pipe(
@@ -79,12 +80,34 @@ export class PostService {
     return user.photos;
   }
 
+  async listUserPost(username: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        username: username,
+      },
+      relations: {
+        photos: true,
+      },
+    });
+    if (!user) {
+      throw 'User not found';
+    }
+
+    return user.photos;
+  }
+
   async getTimeline(userId: string): Promise<Photo[]> {
     // Get user's own posts
-    const userPhotos = await this.photoRepository.find({
-      where: { user: { id: userId } },
-      relations: ['user'], // Include the user relation
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['photos'],
     });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const userPhotos = user.photos;
 
     // Get the IDs of users that the current user is following
     const followingUsers = await this.followingRepository.find({
@@ -93,15 +116,15 @@ export class PostService {
     });
 
     // Get posts from the users the current user is following
+    const followingUserIds = followingUsers.map((user) => user.following.id);
     const followingPhotos = await this.photoRepository.find({
-      where: {
-        user: { id: In(followingUsers.map((user) => user.following.id)) },
-      },
+      where: { user: In(followingUserIds) },
       relations: ['user'], // Include the user relation
     });
 
     // Combine the user's own posts and the posts from followings
     const combinedPhotos = [...userPhotos, ...followingPhotos];
+    console.log(combinedPhotos);
 
     return combinedPhotos;
   }

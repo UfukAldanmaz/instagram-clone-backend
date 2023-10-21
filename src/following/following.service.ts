@@ -9,18 +9,36 @@ export class FollowingService {
   constructor(
     @InjectRepository(Following)
     private followingRepository: Repository<Following>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async followUser(
     followerId: string,
     followingId: string,
   ): Promise<Following> {
-    const follower = new User();
-    follower.id = followerId;
-
-    const following = new User();
-    following.id = followingId;
-
+    const follower = await this.userRepository.findOne({
+      where: {
+        id: followerId,
+      },
+      select: {
+        id: true,
+        username: true,
+        bio: true,
+        profilePictureUrl: true,
+      },
+    });
+    const following = await this.userRepository.findOne({
+      where: {
+        id: followingId,
+      },
+      select: {
+        id: true,
+        username: true,
+        bio: true,
+        profilePictureUrl: true,
+      },
+    });
     const follow = new Following();
     follow.follower = follower;
     follow.following = following;

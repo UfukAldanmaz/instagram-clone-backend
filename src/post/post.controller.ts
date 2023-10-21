@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Param,
   Post,
   Request,
   UploadedFile,
@@ -23,12 +24,20 @@ export class PostController {
     @Request() request: any,
   ) {
     const userId = request.user.userId;
+
     return this.postService.uploadPhoto(file, userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   list(@Request() request: any) {
     return this.postService.list(request.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':username')
+  listUserPost(@Param('username') username: string) {
+    return this.postService.listUserPost(username);
   }
 
   @UseGuards(JwtAuthGuard)

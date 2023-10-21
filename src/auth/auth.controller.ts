@@ -33,7 +33,7 @@ export class AuthController {
   }
 
   @Post('/logout')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(RefreshJwtAuthGuard)
   async logout(@Request() req) {
     const userId = req.user.userId;
     const logoutStatus = await this.authService.logout(userId);
@@ -52,8 +52,11 @@ export class AuthController {
 
   @UseGuards(RefreshJwtAuthGuard)
   @Post('/refresh')
-  async refreshToken(@Body() dto: Record<string, any>) {
-    const user = await this.authService.validateUser(dto.email, dto.password);
-    return this.authService.refreshToken(user);
+  async refreshToken(@Request() request: any) {
+    console.log('controllerRT');
+
+    const userId = request.user.userId;
+    console.log('RefreshTokennn', request.user);
+    return this.authService.refreshToken(userId);
   }
 }
