@@ -15,6 +15,20 @@ export class UsersService {
     private httpService: HttpService,
   ) {}
 
+  async getProfile(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    if (!user) {
+      throw 'User not found';
+    }
+    const profilePictureUrl =
+      user.profilePictureUrl || '/images/default-images/anonymous.jpg';
+
+    return { ...user, profilePictureUrl };
+  }
   async getUserProfile(username: string): Promise<User | undefined> {
     return this.userRepository.findOne({
       where: {
@@ -53,7 +67,7 @@ export class UsersService {
       const { data: imageData } = await firstValueFrom(
         this.httpService
           .post(
-            `https://api.imgbb.com/1/upload?expiration=600&key=${'dfaa2b440b67524314651b73275a6e22'}`,
+            `https://api.imgbb.com/1/upload?key=${'dfaa2b440b67524314651b73275a6e22'}`,
             formData,
           )
           .pipe(

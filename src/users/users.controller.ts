@@ -21,6 +21,20 @@ export class UsersController {
     private postService: PostService,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getProfile(@Request() request: any) {
+    const userId = request.user.userId; // Get the user ID from the JWT payload
+
+    // Fetch the user's profile data
+    const profile = await this.usersService.getProfile(userId);
+
+    if (!profile) {
+      throw new NotFoundException('User not found');
+    }
+
+    return profile; // Return the user's profile data
+  }
   @Get(':username')
   async getUserProfile(@Param('username') username: string) {
     const user = await this.usersService.getUserProfile(username);

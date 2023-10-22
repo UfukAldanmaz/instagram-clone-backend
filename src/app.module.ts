@@ -1,7 +1,9 @@
 import 'reflect-metadata';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import * as express from 'express';
+import { join } from 'path';
 
 // Modules
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -50,4 +52,10 @@ const modules = [
     // },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Serve images from the "images" directory
+    consumer.apply(express.static(join(__dirname, '..', 'images')));
+    consumer.apply(express.static(join(__dirname, '..', 'default-images')));
+  }
+}
