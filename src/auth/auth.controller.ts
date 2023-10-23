@@ -53,10 +53,7 @@ export class AuthController {
   @UseGuards(RefreshJwtAuthGuard)
   @Post('/refresh')
   async refreshToken(@Request() request: any) {
-    console.log('controllerRT');
-
     const userId = request.user.userId;
-    console.log('RefreshTokennn', request.user);
     return this.authService.refreshToken(userId);
   }
 }

@@ -17,14 +17,8 @@ export class RefreshJwtStrategy extends PassportStrategy(
       passReqToCallback: true,
     });
   }
-  //   async validate(payload: any) {
-  //     console.log('valide', payload);
 
-  //     return { userId: payload.sub, email: payload.email };
-  //   }
   validate(req: Request, payload: any) {
-    console.log('valid', req, payload);
-
     const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
     return { ...payload, refreshToken };
   }

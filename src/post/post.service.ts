@@ -8,6 +8,7 @@ import { User } from 'src/auth/entities/user.entity';
 import { In, Repository } from 'typeorm';
 import * as FormData from 'form-data';
 import { Following } from 'src/auth/entities/following.entity';
+import { TimelineResponse } from 'src/timeline-response.dto';
 
 @Injectable()
 export class PostService {
@@ -32,6 +33,8 @@ export class PostService {
         },
       });
       if (!user) {
+        console.log('1');
+
         throw 'User not found';
       }
 
@@ -74,6 +77,8 @@ export class PostService {
       },
     });
     if (!user) {
+      console.log('2');
+
       throw 'User not found';
     }
 
@@ -90,44 +95,109 @@ export class PostService {
       },
     });
     if (!user) {
+      console.log('3');
+
       throw 'User not found';
     }
 
     return user.photos;
   }
 
-  async getTimeline(userId: string): Promise<Photo[]> {
-    // Get user's own posts
+  async getTimeline(userId: string): Promise<TimelineResponse[]> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['photos'],
+      relations: {
+        photos: true,
+      },
     });
 
     if (!user) {
+      console.log('4');
+
       throw new NotFoundException('User not found');
     }
-
-    const userPhotos = user.photos;
+    console.log('user', user);
 
     // Get the IDs of users that the current user is following
     const followingUsers = await this.followingRepository.find({
       where: { follower: { id: userId } },
-      select: ['following'],
+      relations: {
+        following: true,
+      },
     });
+    console.log('followingusers', followingUsers);
 
     // Get posts from the users the current user is following
     const followingUserIds = followingUsers.map((user) => user.following.id);
     const followingPhotos = await this.photoRepository.find({
       where: { user: In(followingUserIds) },
-      relations: ['user'], // Include the user relation
+      relations: {
+        user: true,
+      }, // Include the user relation
     });
 
-    // Combine the user's own posts and the posts from followings
-    const combinedPhotos = [...userPhotos, ...followingPhotos];
-    console.log(combinedPhotos);
+    // Create an array of TimelineResponse objects
+    const combinedPhotos: TimelineResponse[] = user.photos.map((photo) => ({
+      id: photo.id,
+      url: photo.url,
+      user: {
+        id: user.id,
+        username: user.username,
+        profilePictureUrl: user.profilePictureUrl,
+      },
+    }));
+
+    followingPhotos.forEach((photo) => {
+      combinedPhotos.push({
+        id: photo.id,
+        url: photo.url,
+        user: {
+          id: photo.user.id,
+          username: photo.user.username,
+          profilePictureUrl: photo.user.profilePictureUrl,
+        },
+      });
+    });
 
     return combinedPhotos;
   }
+
+  // async getTimeline(userId: string): Promise<Photo[]> {
+  //   // Get user's own posts
+  //   console.log('Received userId: ' + userId);
+
+  //   const user = await this.userRepository.findOne({
+  //     where: { id: userId },
+  //     relations: ['photos'],
+  //   });
+
+  //   if (!user) {
+  //     console.log('User not found for userId: ' + userId);
+
+  //     throw new NotFoundException('User not found');
+  //   }
+
+  //   const userPhotos = user.photos;
+
+  //   // Get the IDs of users that the current user is following
+  //   const followingUsers = await this.followingRepository.find({
+  //     where: { follower: { id: userId } },
+  //     select: ['following'],
+  //   });
+
+  //   // Get posts from the users the current user is following
+  //   const followingUserIds = followingUsers.map((user) => user.following.id);
+  //   const followingPhotos = await this.photoRepository.find({
+  //     where: { user: In(followingUserIds) },
+  //     relations: ['user'], // Include the user relation
+  //   });
+
+  //   // Combine the user's own posts and the posts from followings
+  //   const combinedPhotos = [...userPhotos, ...followingPhotos];
+  //   console.log(combinedPhotos);
+
+  //   return combinedPhotos;
+  // }
 }
 
 //paramtredeki userID'nin takip ettiği userId'leri al

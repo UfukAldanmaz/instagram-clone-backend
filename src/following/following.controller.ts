@@ -5,6 +5,7 @@ import {
   Delete,
   Param,
   Request,
+  Get,
 } from '@nestjs/common';
 import { FollowingService } from './following.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -34,5 +35,19 @@ export class FollowingController {
       request.user.userId,
       followingId,
     );
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getFollowing(@Request() request: any) {
+    console.log(request.user.userId);
+
+    return this.followingService.getFollowing(request.user.userId);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('/followers')
+  async getFollowers(@Request() request: any) {
+    console.log(request.user.userId);
+
+    return this.followingService.getFollowers(request.user.userId);
   }
 }

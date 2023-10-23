@@ -11,6 +11,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PostService } from './post.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { TimelineResponse } from 'src/timeline-response.dto';
 
 @Controller('post')
 export class PostController {
@@ -35,14 +36,21 @@ export class PostController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':username')
+  @Get('/user/:username')
   listUserPost(@Param('username') username: string) {
     return this.postService.listUserPost(username);
   }
-
   @UseGuards(JwtAuthGuard)
   @Get('/timeline')
-  timeline(@Request() request: any) {
-    return this.postService.getTimeline(request.user.userId);
+  async timeline(@Request() request: any): Promise<TimelineResponse[]> {
+    const userId = request.user.userId;
+    console.log('USERID', userId);
+
+    // Call your service to get the timeline data
+    const timelineData: TimelineResponse[] =
+      await this.postService.getTimeline(userId);
+    console.log('timelinedata', timelineData);
+
+    return timelineData; // Return the timeline data as a response
   }
 }

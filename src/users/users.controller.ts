@@ -30,6 +30,8 @@ export class UsersController {
     const profile = await this.usersService.getProfile(userId);
 
     if (!profile) {
+      console.log('5');
+
       throw new NotFoundException('User not found');
     }
 
@@ -38,9 +40,10 @@ export class UsersController {
   @Get(':username')
   async getUserProfile(@Param('username') username: string) {
     const user = await this.usersService.getUserProfile(username);
-    console.log('GETUSER', user);
 
     if (!user) {
+      console.log('6');
+
       throw new NotFoundException('User not found');
     }
     return user;

@@ -22,12 +22,12 @@ export class UsersService {
       },
     });
     if (!user) {
+      console.log('7');
+
       throw 'User not found';
     }
-    const profilePictureUrl =
-      user.profilePictureUrl || '/images/default-images/anonymous.jpg';
 
-    return { ...user, profilePictureUrl };
+    return user;
   }
   async getUserProfile(username: string): Promise<User | undefined> {
     return this.userRepository.findOne({
@@ -56,6 +56,8 @@ export class UsersService {
         },
       });
       if (!user) {
+        console.log('8');
+
         throw 'User not found';
       }
 

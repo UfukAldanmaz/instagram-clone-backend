@@ -46,8 +46,6 @@ export class AuthService {
     });
 
     if (!(await bcrypt.compare(pass, user?.password))) {
-      console.log('1');
-
       throw new UnauthorizedException();
     }
     return user;

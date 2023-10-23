@@ -52,10 +52,4 @@ const modules = [
     // },
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    // Serve images from the "images" directory
-    consumer.apply(express.static(join(__dirname, '..', 'images')));
-    consumer.apply(express.static(join(__dirname, '..', 'default-images')));
-  }
-}
+export class AppModule {}

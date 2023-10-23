@@ -53,7 +53,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      console.log('2');
       throw new UnauthorizedException();
     }
     try {
@@ -64,7 +63,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       // so that we can access it in our route handlers
       request['user'] = { userId: payload.sub, email: payload.email };
     } catch {
-      console.log('3');
       throw new UnauthorizedException();
     }
     return true;

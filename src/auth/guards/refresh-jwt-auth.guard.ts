@@ -29,12 +29,10 @@ export class RefreshJwtAuthGuard extends AuthGuard('jwt-refresh') {
     }
 
     const request = context.switchToHttp().getRequest();
-    console.log('');
 
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      console.log('4');
       throw new UnauthorizedException();
     }
     try {
@@ -44,9 +42,7 @@ export class RefreshJwtAuthGuard extends AuthGuard('jwt-refresh') {
       });
 
       request['user'] = { userId: payload.sub, email: payload.email };
-      console.log('REFRESHTOKEN', payload);
     } catch {
-      console.log('5');
       throw new UnauthorizedException();
     }
     return true;
@@ -54,7 +50,6 @@ export class RefreshJwtAuthGuard extends AuthGuard('jwt-refresh') {
 
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    console.log('RTtype', type, 'RTtoken', token);
 
     return type === 'Bearer' ? token : undefined;
   }
