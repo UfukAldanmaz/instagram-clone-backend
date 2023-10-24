@@ -22,8 +22,6 @@ export class UsersService {
       },
     });
     if (!user) {
-      console.log('7');
-
       throw 'User not found';
     }
 
@@ -56,8 +54,6 @@ export class UsersService {
         },
       });
       if (!user) {
-        console.log('8');
-
         throw 'User not found';
       }
 
