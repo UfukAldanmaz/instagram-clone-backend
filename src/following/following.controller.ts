@@ -39,15 +39,11 @@ export class FollowingController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async getFollowing(@Request() request: any) {
-    console.log(request.user.userId);
-
     return this.followingService.getFollowing(request.user.userId);
   }
   @UseGuards(JwtAuthGuard)
   @Get('/followers')
   async getFollowers(@Request() request: any) {
-    console.log(request.user.userId);
-
     return this.followingService.getFollowers(request.user.userId);
   }
 }
