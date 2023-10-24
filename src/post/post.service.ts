@@ -33,8 +33,6 @@ export class PostService {
         },
       });
       if (!user) {
-        console.log('1');
-
         throw 'User not found';
       }
 
@@ -77,8 +75,6 @@ export class PostService {
       },
     });
     if (!user) {
-      console.log('2');
-
       throw 'User not found';
     }
 
@@ -95,8 +91,6 @@ export class PostService {
       },
     });
     if (!user) {
-      console.log('3');
-
       throw 'User not found';
     }
 
@@ -112,31 +106,24 @@ export class PostService {
     });
 
     if (!user) {
-      console.log('4');
-
       throw new NotFoundException('User not found');
     }
-    console.log('user', user);
 
-    // Get the IDs of users that the current user is following
     const followingUsers = await this.followingRepository.find({
       where: { follower: { id: userId } },
       relations: {
         following: true,
       },
     });
-    console.log('followingusers', followingUsers);
 
-    // Get posts from the users the current user is following
     const followingUserIds = followingUsers.map((user) => user.following.id);
     const followingPhotos = await this.photoRepository.find({
       where: { user: In(followingUserIds) },
       relations: {
         user: true,
-      }, // Include the user relation
+      },
     });
 
-    // Create an array of TimelineResponse objects
     const combinedPhotos: TimelineResponse[] = user.photos.map((photo) => ({
       id: photo.id,
       url: photo.url,
@@ -161,44 +148,4 @@ export class PostService {
 
     return combinedPhotos;
   }
-
-  // async getTimeline(userId: string): Promise<Photo[]> {
-  //   // Get user's own posts
-  //   console.log('Received userId: ' + userId);
-
-  //   const user = await this.userRepository.findOne({
-  //     where: { id: userId },
-  //     relations: ['photos'],
-  //   });
-
-  //   if (!user) {
-  //     console.log('User not found for userId: ' + userId);
-
-  //     throw new NotFoundException('User not found');
-  //   }
-
-  //   const userPhotos = user.photos;
-
-  //   // Get the IDs of users that the current user is following
-  //   const followingUsers = await this.followingRepository.find({
-  //     where: { follower: { id: userId } },
-  //     select: ['following'],
-  //   });
-
-  //   // Get posts from the users the current user is following
-  //   const followingUserIds = followingUsers.map((user) => user.following.id);
-  //   const followingPhotos = await this.photoRepository.find({
-  //     where: { user: In(followingUserIds) },
-  //     relations: ['user'], // Include the user relation
-  //   });
-
-  //   // Combine the user's own posts and the posts from followings
-  //   const combinedPhotos = [...userPhotos, ...followingPhotos];
-  //   console.log(combinedPhotos);
-
-  //   return combinedPhotos;
-  // }
 }
-
-//paramtredeki userID'nin takip ettiği userId'leri al
-//photo tablosundan bu userId'lerin postlarını çek ve return et
