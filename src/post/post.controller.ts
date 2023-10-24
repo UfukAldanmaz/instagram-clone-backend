@@ -44,13 +44,10 @@ export class PostController {
   @Get('/timeline')
   async timeline(@Request() request: any): Promise<TimelineResponse[]> {
     const userId = request.user.userId;
-    console.log('USERID', userId);
 
-    // Call your service to get the timeline data
     const timelineData: TimelineResponse[] =
       await this.postService.getTimeline(userId);
-    console.log('timelinedata', timelineData);
 
-    return timelineData; // Return the timeline data as a response
+    return timelineData;
   }
 }
