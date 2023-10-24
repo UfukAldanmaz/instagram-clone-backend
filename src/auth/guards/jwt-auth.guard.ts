@@ -19,17 +19,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
-  // canActivate(context: ExecutionContext) {
-  //   const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-  //     context.getHandler(),
-  //     context.getClass(),
-  //   ]);
-  //   if (isPublic) {
-  //     return true;
-  //   }
-  //   return super.canActivate(context);
-  // }
-
   handleRequest(err, user, info) {
     if (err || !user) {
       throw err || new UnauthorizedException();
@@ -59,8 +48,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
+
       request['user'] = { userId: payload.sub, email: payload.email };
     } catch {
       throw new UnauthorizedException();
