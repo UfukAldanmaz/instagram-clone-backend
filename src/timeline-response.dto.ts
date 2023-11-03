@@ -1,3 +1,5 @@
+import { LikedByUserDTO } from './liked-by-user.dto';
+
 export class TimelineResponse {
   id: number;
   url: string;
@@ -6,4 +8,6 @@ export class TimelineResponse {
     username: string;
     profilePictureUrl: string;
   };
+  likes: LikedByUserDTO[];
+  hasLiked: boolean;
 }

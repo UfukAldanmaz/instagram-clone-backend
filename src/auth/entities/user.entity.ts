@@ -56,4 +56,8 @@ export class User {
   @ManyToMany(() => Following, (followers) => followers.following)
   @JoinTable({ name: 'user_followers' })
   followers: Following[];
+
+  // @ManyToMany(() => Photo, (photo) => photo.likedBy)
+  // @JoinTable({ name: 'user_likes_photo' })
+  // likedPhotos: Photo[];
 }

@@ -1,5 +1,7 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -12,6 +14,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { PostService } from './post.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { TimelineResponse } from 'src/timeline-response.dto';
+import { Like } from 'src/auth/entities/like.entity';
+import { Comment } from 'src/auth/entities/comment.entity';
 
 @Controller('post')
 export class PostController {
@@ -49,5 +53,49 @@ export class PostController {
       await this.postService.getTimeline(userId);
 
     return timelineData;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/like/:photoId')
+  async likePhoto(
+    @Param('photoId') photoId: number,
+    @Request() request: any,
+  ): Promise<Like> {
+    const userId = request.user.userId;
+    return this.postService.likePhoto(userId, photoId);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Delete('/like/:photoId')
+  async unlikePhoto(
+    @Param('photoId') photoId: number,
+    @Request() request: any,
+  ) {
+    const userId = request.user.userId;
+    return await this.postService.unlikePhoto(userId, photoId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/likedBy/:photoId')
+  async getLikedByUsers(@Param('photoId') photoId: number): Promise<Like[]> {
+    return this.postService.getLikedByUsers(photoId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/comment/:photoId')
+  async addComment(
+    @Param('photoId') photoId: number,
+    @Request() request: any,
+    @Body('comment') comment: string,
+  ): Promise<Comment> {
+    const userId = request.user.userId;
+    return this.postService.addComment(photoId, userId, comment);
+  }
+
+  @Get(':photoId/liked/:userId')
+  async hasUserLikedPost(
+    @Param('userId') userId: string,
+    @Param('photoId') photoId: number,
+  ): Promise<boolean> {
+    return this.postService.hasUserLikedPost(userId, photoId);
   }
 }

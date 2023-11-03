@@ -9,6 +9,8 @@ import { In, Repository } from 'typeorm';
 import * as FormData from 'form-data';
 import { Following } from 'src/auth/entities/following.entity';
 import { TimelineResponse } from 'src/timeline-response.dto';
+import { Like } from 'src/auth/entities/like.entity';
+import { Comment } from 'src/auth/entities/comment.entity';
 
 @Injectable()
 export class PostService {
@@ -21,6 +23,10 @@ export class PostService {
 
     @InjectRepository(Following)
     private followingRepository: Repository<Following>,
+    @InjectRepository(Like)
+    private likeRepository: Repository<Like>,
+    @InjectRepository(Comment)
+    private commentRepository: Repository<Comment>,
 
     private httpService: HttpService,
   ) {}
@@ -101,7 +107,11 @@ export class PostService {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: {
-        photos: true,
+        photos: {
+          likes: {
+            user: true,
+          },
+        },
       },
     });
 
@@ -121,20 +131,34 @@ export class PostService {
       where: { user: In(followingUserIds) },
       relations: {
         user: true,
+        likes: {
+          user: true,
+        },
       },
     });
 
-    const combinedPhotos: TimelineResponse[] = user.photos.map((photo) => ({
-      id: photo.id,
-      url: photo.url,
-      user: {
-        id: user.id,
-        username: user.username,
-        profilePictureUrl: user.profilePictureUrl,
-      },
-    }));
+    const combinedPhotos: TimelineResponse[] = user.photos.map((photo) => {
+      const hasLiked = photo.likes.some((like) => like.user.id === userId);
+
+      return {
+        id: photo.id,
+        url: photo.url,
+        user: {
+          id: user.id,
+          username: user.username,
+          profilePictureUrl: user.profilePictureUrl,
+        },
+        likes: photo.likes.map((item) => ({
+          id: item.user.id,
+          username: item.user.username ?? '',
+          profilePictureUrl: item.user.profilePictureUrl,
+        })),
+        hasLiked: hasLiked,
+      };
+    });
 
     followingPhotos.forEach((photo) => {
+      const hasLiked = photo.likes.some((like) => like.user.id === userId);
       combinedPhotos.push({
         id: photo.id,
         url: photo.url,
@@ -143,9 +167,106 @@ export class PostService {
           username: photo.user.username,
           profilePictureUrl: photo.user.profilePictureUrl,
         },
+        likes: photo.likes.map((item) => ({
+          id: item.user.id,
+          username: item.user.username ?? '',
+          profilePictureUrl: item.user.profilePictureUrl,
+        })),
+        hasLiked: hasLiked,
       });
     });
 
     return combinedPhotos;
+  }
+
+  async likePhoto(userId: string, photoId: number): Promise<Like> {
+    const photo = await this.photoRepository.findOne({
+      where: { id: photoId },
+      relations: { likes: true },
+    });
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        profilePictureUrl: true,
+      },
+    });
+
+    if (!photo || !user) {
+      throw new NotFoundException('Photo or user not found');
+    }
+
+    const like = new Like();
+    like.user = user;
+    like.photo = photo;
+    console.log('newlike', like);
+    console.log('like.user', like.user);
+    console.log('like.photo', like.photo);
+
+    return await this.likeRepository.save(like);
+  }
+
+  async unlikePhoto(userId: string, photoId: number): Promise<void> {
+    await this.likeRepository
+      .createQueryBuilder()
+      .delete()
+      .from(Like)
+      .where('user = :userId', { userId })
+      .andWhere('photo = :photoId', { photoId })
+      .execute();
+  }
+
+  async getLikedByUsers(photoId: number): Promise<Like[]> {
+    const photo = await this.photoRepository.findOne({
+      where: { id: photoId },
+      relations: { likes: true },
+    });
+
+    if (!photo) {
+      throw new NotFoundException('Photo not found');
+    }
+
+    console.log('likes', photo.likes);
+
+    return photo.likes;
+  }
+
+  async hasUserLikedPost(userId: string, photoId: number): Promise<boolean> {
+    const like = await this.likeRepository.findOne({
+      where: {
+        user: { id: userId },
+        photo: { id: photoId },
+      },
+    });
+    return !!like;
+  }
+
+  async addComment(
+    photoId: number,
+    userId: string,
+    comment: string,
+  ): Promise<Comment> {
+    const photo = await this.photoRepository.findOne({
+      where: {
+        id: photoId,
+      },
+    });
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!photo || !user) {
+      throw new NotFoundException('Photo or user not found');
+    }
+
+    const newComment = new Comment();
+    newComment.user = user;
+    newComment.photo = photo;
+    newComment.comment = comment;
+
+    return await this.commentRepository.save(newComment);
   }
 }
