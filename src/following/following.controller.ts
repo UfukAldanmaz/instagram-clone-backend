@@ -46,4 +46,17 @@ export class FollowingController {
   async getFollowers(@Request() request: any) {
     return this.followingService.getFollowers(request.user.userId);
   }
+  @UseGuards(JwtAuthGuard)
+  @Get('/:username/following')
+  async getFollowingByUsername(@Param('username') username: string) {
+    // Fetch the followings of the user identified by 'username'
+    // Implement the logic to fetch followings for the specified user
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/:username/followers')
+  async getFollowersByUsername(@Param('username') username: string) {
+    // Fetch the followers of the user identified by 'username'
+    // Implement the logic to fetch followers for the specified user
+  }
 }
