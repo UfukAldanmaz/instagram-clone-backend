@@ -80,7 +80,6 @@ export class FollowingService {
     const user = await this.userRepository.findOne({ where: { username } });
 
     if (!user) {
-      // Handle the case where the user is not found
       return [];
     }
 
@@ -91,7 +90,6 @@ export class FollowingService {
     const user = await this.userRepository.findOne({ where: { username } });
 
     if (!user) {
-      // Handle the case where the user is not found
       return [];
     }
 
