@@ -87,6 +87,7 @@ export class PostService {
       id: photo.id,
       url: photo.url,
       username: user.username,
+      profilePictureUrl: user.profilePictureUrl,
     }));
   }
 
