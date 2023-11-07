@@ -75,4 +75,26 @@ export class FollowingService {
       },
     });
   }
+
+  async getFollowingByUsername(username: string): Promise<Following[]> {
+    const user = await this.userRepository.findOne({ where: { username } });
+
+    if (!user) {
+      // Handle the case where the user is not found
+      return [];
+    }
+
+    return this.followingRepository.find({ where: { following: user } });
+  }
+
+  async getFollowersByUsername(username: string): Promise<Following[]> {
+    const user = await this.userRepository.findOne({ where: { username } });
+
+    if (!user) {
+      // Handle the case where the user is not found
+      return [];
+    }
+
+    return this.followingRepository.find({ where: { follower: user } });
+  }
 }
