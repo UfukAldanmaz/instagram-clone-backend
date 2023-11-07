@@ -204,9 +204,6 @@ export class PostService {
     const like = new Like();
     like.user = user;
     like.photo = photo;
-    console.log('newlike', like);
-    console.log('like.user', like.user);
-    console.log('like.photo', like.photo);
 
     return await this.likeRepository.save(like);
   }
@@ -230,8 +227,6 @@ export class PostService {
     if (!photo) {
       throw new NotFoundException('Photo not found');
     }
-
-    console.log('likes', photo.likes);
 
     return photo.likes;
   }
