@@ -83,8 +83,11 @@ export class PostService {
     if (!user) {
       throw 'User not found';
     }
-
-    return user.photos;
+    return user.photos.map((photo) => ({
+      id: photo.id,
+      url: photo.url,
+      username: user.username,
+    }));
   }
 
   async listUserPost(username: string) {
